@@ -1,0 +1,9 @@
+{
+  "title": "artifacts.creative_tab",
+  "icon": "artifacts:bunny_hoppers",
+  "items": [
+    "artifacts:bunny_hoppers",
+    "artifacts:feral_claws",
+    "artifacts:shock_pendant"
+  ]
+}

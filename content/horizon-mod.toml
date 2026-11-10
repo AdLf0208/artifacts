@@ -1,0 +1,11 @@
+# Port-owned content mod for the three Artifacts slice-1 items (definitions,
+# models, textures, lang and the creative tab). The effects live in the native
+# bundle in ../. Assets come from the MIT upstream repository
+# (ochotonida/artifacts). LOCAL-ONLY until the maintainer approves publishing
+# (ARCHITECTURE.md §8).
+id = "artifacts"
+name = "Artifacts"
+version = "15.1.3"
+api = "0.2"
+side = "both"
+capabilities = ["registries"]

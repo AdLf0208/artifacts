@@ -1,0 +1,49 @@
+id = "artifacts"
+kind = "native-mod"
+name = "artifacts"
+summary = "A Horizon port of artifacts."
+description = """
+A port of [artifacts](ochotonida/artifacts) for Horizon.
+
+**Implemented so far**
+
+- Upstream equips artifacts in its own equipment slots (Curios on 1.21.1,
+- `WearableArtifactItem`; the 26.x branches use their own equipment providers).
+- This slice **defers the slot system**: the player's main inventory and off hand
+- stand in for the worn slots, and each artifact counts at most once, like one
+- slot. The attributes are re-applied every player tick, so dropping or disabling
+- an artifact removes its modifiers.
+- | Artifact | Effect while carried | Upstream |
+- |---|---|---|
+
+**Not yet ported**
+
+- Inventory instead of slots.** Upstream wears artifacts in Curios/its own
+- equipment slots; the port treats the main inventory and off hand as the
+- worn slots. A player can carry all three at once, and a second copy of one
+- artifact adds nothing (one slot per kind).
+- One worn slot, not one per artifact kind.** Slice 2 implements
+- right-click equip: a main-hand artifact moves into an **empty off hand**
+- (and is refused when the off hand is occupied). The main inventory still
+- counts as a fallback, and upstream's own/Curios equipment slots (A1) are not
+
+Original copyright and licence notices are kept in this repository. Pinned to
+Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is
+welcome.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/artifacts"
+icon = "icons/artifacts.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-10"
+game = "26.3"
+file = "artifacts.hnmod"
+sha256 = "ca84a1cb948ef746b5d6ec866380a7e7273e69fb2aac89f36d29b5c0181bb8e9"
+changelog = "First release"

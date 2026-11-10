@@ -1,0 +1,19 @@
+[package]
+name = "horizon-artifacts"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+license = "MIT"
+description = "Artifacts for Horizon: carried artifacts grant their upstream attribute and damage effects"
+
+# Ported from: Artifacts 15.1.3 (ochotonida/artifacts, MIT), branch 26.1
+# (behaviour identical on the 1.21.1 branch, 13.2.5, for these three items).
+# Local-only until the maintainer approves publication (ARCHITECTURE.md §8).
+
+[lib]
+# This exact source is also injected as a same-crate module by horizon-mixins.
+path = "mixins/artifacts/runtime.rs"
+
+[workspace]
+members = ["tools/audit"]
+resolver = "2"

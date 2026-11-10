@@ -1,0 +1,90 @@
+[mod]
+id = "artifacts"
+version = "0.1.0"
+priority = 100
+
+[compatibility]
+horizon_revision = "1d63e0a5a37a7a708eb0b32b49bf0dfeb28ed8a9"
+
+# The pure effect core (standalone crate lib, injected as
+# `crate::game::artifacts`).
+[[module]]
+id = "runtime"
+file = "crates/horizon-client/src/game.rs"
+name = "artifacts"
+source = "runtime.rs"
+
+# Game-side glue: config, inventory scan, attribute modifiers, damage cache.
+[[module]]
+id = "state"
+file = "crates/horizon-client/src/game.rs"
+name = "artifacts_state"
+source = "support.rs"
+
+# The content half is inside this bundle (`data/artifacts-content.hmod`, the built
+# `content/artifacts.hmod`): this writes it to `.horizon-cache/` and appends it to the
+# dev-mod list, so one `.hnmod` installs the items and the code. The registry keeps one
+# file per project, so a split port could not be listed; AE2 ships the same pattern.
+[[injection]]
+id = "embedded-content"
+kind = "HEAD"
+cancellable = true
+target = "horizon_client::game::mods::content_root"
+helper = "embedded_content.rs"
+bindings = [
+  { name = "root", ty = "&std::path::Path", value = "root" },
+  { name = "enabled", ty = "&std::collections::BTreeSet<String>", value = "enabled" },
+  { name = "dev", ty = "&[std::path::PathBuf]", value = "dev" },
+]
+
+# Before the server starts: load or create `config/artifacts.conf`.
+[[injection]]
+id = "about-to-start"
+hook = "server_about_to_start"
+hook_version = 1
+kind = "HEAD"
+helper = "about.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+# End of every living player's server tick: apply the carried artifacts'
+# attribute modifiers and refresh the damage hook's loadout cache.
+[[injection]]
+id = "player-tick"
+hook = "player_tick"
+hook_version = 1
+kind = "HEAD"
+helper = "player.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+]
+
+# A right click with an artifact: move it from the main hand into the off hand,
+# the port's worn slot. The existing inventory scan already counts the off hand.
+[[injection]]
+id = "equip"
+hook = "use_item"
+hook_version = 1
+kind = "HEAD"
+helper = "equip.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "stack", ty = "&horizon_client::items::ItemStack", value = "stack" },
+  { name = "claimed", ty = "&mut bool", value = "claimed" },
+]
+
+# A hit is about to land: the Shock Pendant cancels lightning damage while the
+# player carries it. The hook has no `self`; the helper reads the cache.
+[[injection]]
+id = "lightning-immunity"
+hook = "living_incoming_damage"
+hook_version = 1
+kind = "HEAD"
+helper = "damage.rs"
+bindings = [
+  { name = "entity", ty = "i32", value = "entity" },
+  { name = "kind", ty = "&str", value = "kind" },
+  { name = "damage_type", ty = "&str", value = "damage_type" },
+  { name = "canceled", ty = "&mut bool", value = "canceled" },
+]
