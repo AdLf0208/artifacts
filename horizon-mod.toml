@@ -1,0 +1,31 @@
+# Artifacts (Horizon port) — one flat package: content and code.
+#
+# Migrated 2026-11-18 from the retired `.hnmod` container (Horizon's mod-API merge,
+# #16941; the registry closed submission #791 for it). The manifest below is the only
+# one: identity, content capability and the exact native pins. `assets/` and `data/`
+# are the carried content (three artifact items), `src/` is the port's code — one
+# package, so the retired bundle's embedded-content injection is gone.
+#
+# Licence: MIT (upstream, Copyright (c) Wouter Pauwels). Local-only until the
+# maintainer approves publishing (campaign ARCHITECTURE.md §8).
+id = "artifacts"
+name = "Artifacts"
+version = "0.2.0"
+description = """Three artifacts of the original mod's wearable set, carried in the player's inventory:
+Bunny Hoppers grant jump strength, safe fall distance and the fall-damage multiplier, Feral Claws
+grant attack speed, and the Shock Pendant cancels lightning damage. A right click with an artifact
+moves it into an empty off hand, the one worn slot the API exposes. The remaining artifacts, the
+worn-slot registry and the Mimic are not ported yet."""
+authors = ["Wouter Pauwels", "AdLf0208"]
+# The content API: exact and checked. This package ships carried content (the three
+# artifact items) beside its code, so the capability is a real claim.
+api = "0.2"
+# The installation side, not the hook's: an integrated server belongs to the client
+# installation, so a LAN host or a single-player world needs both.
+side = "both"
+capabilities = ["registries"]
+
+[native]
+game = "26.3"
+horizon = "0b14f8acfd97fa2c750e42795249dcc981178ca4"
+mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"
