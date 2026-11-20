@@ -184,7 +184,7 @@ pub struct AttributeEffect {
 /// The glue calls `set_modifier` for each one with `present`, so an artifact
 /// taken off or disabled removes its modifier on the next tick.
 #[must_use]
-pub fn attribute_effects(worn: &Loadout, config: &Config) -> Vec<AttributeEffect> {
+pub fn attribute_effects(worn: &Loadout, config: &ServerConfig) -> Vec<AttributeEffect> {
     vec![
         AttributeEffect {
             attribute: "minecraft:attack_speed",
@@ -228,7 +228,7 @@ pub fn is_lightning(damage_type: &str) -> bool {
 /// invulnerable to `#minecraft:is_lightning` (`LivingEntityMixin.java:14-20`);
 /// the port answers the same question at `living_incoming_damage`.
 #[must_use]
-pub fn blocks_damage(worn: &Loadout, kind: &str, damage_type: &str, config: &Config) -> bool {
+pub fn blocks_damage(worn: &Loadout, kind: &str, damage_type: &str, config: &ServerConfig) -> bool {
     kind == "minecraft:player"
         && config.shock_pendant_enabled
         && config.shock_pendant_cancel_lightning_damage
@@ -247,7 +247,7 @@ pub fn equips_from_use(item: &str, off_hand_occupied: bool) -> bool {
 
 /// The server settings this slice understands. Defaults are upstream's.
 #[derive(Clone, Debug, PartialEq)]
-pub struct Config {
+pub struct ServerConfig {
     pub bunny_hoppers_enabled: bool,
     pub bunny_hoppers_fall_damage_multiplier: f64,
     pub bunny_hoppers_safe_fall_distance_bonus: f64,
@@ -258,7 +258,7 @@ pub struct Config {
     pub shock_pendant_cancel_lightning_damage: bool,
 }
 
-impl Default for Config {
+impl Default for ServerConfig {
     fn default() -> Self {
         Self {
             bunny_hoppers_enabled: true,
@@ -277,8 +277,8 @@ impl Default for Config {
 /// keys and badly typed values keep their defaults; numbers are clamped and a
 /// non-finite value keeps the default.
 #[must_use]
-pub fn parse_config(text: &str) -> Config {
-    let mut config = Config::default();
+pub fn parse_config(text: &str) -> ServerConfig {
+    let mut config = ServerConfig::default();
     for raw in text.lines() {
         let line = raw.trim();
         if line.is_empty() || line.starts_with('#') {
@@ -356,7 +356,7 @@ fn number(value: &str, default: f64, min: f64, max: f64) -> f64 {
 
 /// Write the config in the format `parse_config` reads.
 #[must_use]
-pub fn format_config(config: &Config) -> String {
+pub fn format_config(config: &ServerConfig) -> String {
     format!(
         "# Artifacts (Horizon) — server settings.\n\
          # Upstream's defaults; -1 cancels an ADD_MULTIPLIED_BASE bonus.\n\
@@ -383,8 +383,8 @@ pub fn format_config(config: &Config) -> String {
 mod tests {
     use super::*;
 
-    fn config() -> Config {
-        Config::default()
+    fn config() -> ServerConfig {
+        ServerConfig::default()
     }
 
     fn effect<'a>(effects: &'a [AttributeEffect], attribute: &str) -> &'a AttributeEffect {
@@ -490,7 +490,7 @@ mod tests {
 
     #[test]
     fn config_round_trips() {
-        let c = Config::default();
+        let c = ServerConfig::default();
         assert_eq!(parse_config(&format_config(&c)), c);
         let c = parse_config(
             "bunny_hoppers_enabled = false\n\

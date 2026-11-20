@@ -67,7 +67,7 @@ impl Ids {
 /// The server settings in force and the loadout cache the static damage hook reads.
 #[derive(Default)]
 struct State {
-    config: runtime::Config,
+    config: runtime::ServerConfig,
     /// Which artifacts each player wears, keyed by the entity id the damage hook names.
     /// Refreshed at the end of every server player tick.
     worn: BTreeMap<i32, runtime::Loadout>,
@@ -220,18 +220,18 @@ impl ItemPart for ArtifactPart {
 /// Read `config/artifacts.conf` through the mod's own checked config service, writing the
 /// upstream defaults when the file is absent. A refused read keeps the defaults, which is
 /// what upstream starts with.
-fn load_config(files: &dyn ConfigFiles) -> runtime::Config {
+fn load_config(files: &dyn ConfigFiles) -> runtime::ServerConfig {
     let Ok(path) = ConfigPath::new(runtime::CONFIG_FILE) else {
-        return runtime::Config::default();
+        return runtime::ServerConfig::default();
     };
     match files.read(&path) {
         Ok(bytes) => runtime::parse_config(&String::from_utf8_lossy(&bytes)),
         Err(ConfigFileError::NotFound) => {
-            let config = runtime::Config::default();
+            let config = runtime::ServerConfig::default();
             let _ = files.write(&path, runtime::format_config(&config).as_bytes());
             config
         }
-        Err(_) => runtime::Config::default(),
+        Err(_) => runtime::ServerConfig::default(),
     }
 }
 
@@ -254,7 +254,7 @@ fn apply_attributes(
     host: &mut dyn ServerHost,
     player: PlayerRef,
     worn: &runtime::Loadout,
-    config: &runtime::Config,
+    config: &runtime::ServerConfig,
 ) {
     let effects = runtime::attribute_effects(worn, config);
     let Some(living) = host.living(player.entity()) else {
