@@ -25,9 +25,14 @@ directly in `ports/artifacts` with `CARGO_INCREMENTAL=0`; the game was built by
 | In game, the old package | the new `tools/e2e.sh` against the 0.2.0 build | `FAIL: merely carried: no bonus … got 5.2` + `EXIT:1` |
 | Log gate | `python3 ports/tools/check-e2e-logs.py artifacts-e2e --strict` | `logs=6 ok=6 missing-exit=0 bad-exit=0` |
 
-`cargo horizon-mod fits --build nightly` reports `does not fit: 1 item changed` because
-`nightly` resolves to the newest nightly, whose SDK changed `Config`; this package targets
-`0b14f8a` and `--build 0b14f8a` is the gate.
+`cargo horizon-mod fits --build nightly` reported `does not fit: 1 item changed` because the
+package's generated `uses.json` recorded the port's **local** `Config` as the SDK `type:Config`
+with `"built": "full"` (a source-text name collision, not a real SDK literal); the 2026-11-20
+repair renamed the local type to `ServerConfig`, so the table is true and the package now reports
+**`f00125f  fits`** (exit 0). The package targets `0b14f8a` and `--build 0b14f8a` remains the
+gate. Current package: **23,673 B**, SHA-256
+`9382fa0cc62bddf15cf410c5811063a1e14c27489a7f355815b00ab5c5726442`; see `notes.md` §Registry
+fit-gate repair.
 
 Evidence: `ports/_shared/evidence/artifacts/slice3-*.log` and
 `ports/_shared/evidence/artifacts-e2e/`.
